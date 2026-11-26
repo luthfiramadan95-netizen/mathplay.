@@ -1,0 +1,1642 @@
+<!-- ... existing code ... -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#7C3AED',
+                            pink: '#EC4899',
+                            yellow: '#F59E0B',
+                            green: '#10B981',
+                            blue: '#3B82F6',
+                            cyan: '#06B6D4'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #38bdf8;
+            min-height: 100vh;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.84);
+            backdrop-filter: blur(10px);
+            border: 4px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        .screen-animate {
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-bounce:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-bounce:active {
+            transform: scale(0.97) translateY(3px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+        }
+        canvas {
+            touch-action: none;
+        }
+        /* Custom SVG Tank styling */
+        .tank-body {
+            transition: transform 0.3s ease;
+        }
+        /* Mascot Animation */
+        .mascot-bounce {
+            animation: mascotBounce 2s ease-in-out infinite;
+        }
+        @keyframes mascotBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-2 sm:p-6 min-h-screen text-gray-800 relative overflow-x-hidden">
+
+    <!-- Background Video Animasi Berulang -->
+    <video id="bg-video" autoplay loop muted playsinline preload="auto" class="fixed inset-0 w-full h-full object-cover -z-10 pointer-events-none">
+        <source src="./gemini_generated_video_6d18dbc7.mp4" type="video/mp4">
+    </video>
+
+    <!-- Global Audio / Sound Switch (On/Off) -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="btn-audio-toggle" onclick="toggleAudio()" class="btn-bounce bg-white/90 hover:bg-white text-purple-800 font-bold px-4 py-2 rounded-full shadow-lg border-2 border-purple-300 flex items-center gap-2 backdrop-blur-sm transition text-sm">
+            <span id="audio-icon">🔊</span>
+            <span id="audio-text">Suara: ON</span>
+        </button>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-3xl mx-auto z-10 my-8">
+
+        <!-- 1. START / SPLASH SCREEN -->
+        <div id="screen-splash" class="glass-card rounded-3xl p-6 sm:p-12 text-center shadow-2xl relative overflow-hidden transition-all duration-500">
+            <div class="inline-block bg-yellow-400 text-yellow-900 font-heading text-sm sm:text-base px-4 py-1.5 rounded-full mb-4 shadow-md font-bold tracking-wide">
+                <i class="fa-solid fa-star mr-1"></i> Game Edukasi Matematika Interaktif
+            </div>
+            
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 mb-2 leading-tight">
+                MATH PLAY 🧮
+            </h1>
+            <p class="text-purple-900 text-xl sm:text-3xl font-bold mb-8">Belajar Penjumlahan Asyik & Seru</p>
+            
+            <!-- Hero Illustration -->
+            <div class="my-6 relative flex justify-center items-center">
+                <div class="w-44 h-44 sm:w-56 sm:h-56 bg-gradient-to-tr from-yellow-300 via-pink-400 to-purple-500 rounded-full flex items-center justify-center shadow-inner floating">
+                    <span class="text-7xl sm:text-8xl">👩‍🏫</span>
+                </div>
+            </div>
+
+            <button onclick="startBGM(); playBgVideo(); switchScreen('screen-menu'); playSound('click')" class="btn-bounce bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-heading text-2xl sm:text-3xl px-10 py-5 rounded-full shadow-lg hover:shadow-2xl border-4 border-white transition flex items-center justify-center gap-3 mx-auto">
+                <i class="fa-solid fa-circle-play"></i> MULAI SEKARANG
+            </button>
+        </div>
+
+        <!-- 2. MAIN MENU SCREEN -->
+        <div id="screen-menu" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-500">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b-2 border-gray-100 pb-4">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-heading text-purple-800 flex items-center gap-2">
+                        <span>🎯</span> Menu Utama
+                    </h2>
+                    <p class="text-gray-600">Pilih menu belajar atau bertanding penjumlahan</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleGuideModal(true); playSound('click')" class="btn-bounce bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 border-2 border-amber-300 shadow">
+                        <i class="fa-solid fa-circle-info"></i> Panduan Penggunaan
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-1.5 shadow border-2 border-red-300">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menu Grid Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Card 1: Materi -->
+                <div onclick="switchScreen('screen-materi'); showMateriTab('tujuan'); playSound('click')" class="btn-bounce bg-gradient-to-br from-blue-400 to-indigo-600 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="absolute -right-6 -bottom-6 text-8xl text-white/20 group-hover:scale-110 transition">🍎</div>
+                    <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl mb-4 backdrop-blur-sm">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">1. Materi</h3>
+                    <p class="text-blue-100 text-sm">Konsep penjumlahan 1-20 dengan objek visual & garis bilangan.</p>
+                </div>
+
+                <!-- Card 2: Mode Guru & Murid (Bapak Luthfi) -->
+                <div onclick="switchScreen('screen-guru'); initBoard(); playSound('click')" class="btn-bounce bg-gradient-to-br from-pink-400 to-purple-600 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="absolute -right-6 -bottom-6 text-8xl text-white/20 group-hover:scale-110 transition">👨‍🏫</div>
+                    <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl mb-4 backdrop-blur-sm">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">2. Mode Guru & Murid</h3>
+                    <p class="text-pink-100 text-sm">Pak Luthfi kirim soal & papan coretan interaktif untuk Murid!</p>
+                </div>
+
+                <!-- Card 3: Latihan -->
+                <div onclick="switchScreen('screen-latihan'); loadPracticeProblem(); playSound('click')" class="btn-bounce bg-gradient-to-br from-amber-400 to-orange-500 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="absolute -right-6 -bottom-6 text-8xl text-white/20 group-hover:scale-110 transition">📝</div>
+                    <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl mb-4 backdrop-blur-sm">
+                        <i class="fa-solid fa-pen-ruler"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">3. Latihan Soal</h3>
+                    <p class="text-amber-100 text-sm">Latihan penjumlahan 1-20 santai dengan petunjuk bantuan visual.</p>
+                </div>
+
+                <!-- Card 4: Game Penjumlahan / Tank Battle -->
+                <div onclick="switchScreen('screen-game-select'); playSound('click')" class="btn-bounce bg-gradient-to-br from-emerald-400 to-teal-600 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="absolute -right-6 -bottom-6 text-8xl text-white/20 group-hover:scale-110 transition">🎮</div>
+                    <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl mb-4 backdrop-blur-sm">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">4. Game Matematika</h3>
+                    <p class="text-emerald-100 text-sm">Mainkan Kuis Klasik atau Perang Tank 2 Pemain!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. SCREEN MATERI (PENJUMLAHAN LENGKAP) -->
+        <div id="screen-materi" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-heading text-blue-700 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Bahan Ajar: Penjumlahan
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchScreen('screen-menu'); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl transition text-sm sm:text-base">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
+                    </button>
+                    <button onclick="goHome()" class="btn-bounce bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 py-2 rounded-xl border-2 border-purple-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🏠</span> Home
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl border-2 border-red-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigasi Materi -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button id="tab-materi-tujuan" onclick="showMateriTab('tujuan'); playSound('click')" class="materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-blue-600 text-white shadow">🎯 Tujuan</button>
+                <button id="tab-materi-maju" onclick="showMateriTab('maju'); playSound('click')" class="materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-gray-200 text-gray-700 hover:bg-gray-300">🏃 Hitung Maju</button>
+                <button id="tab-materi-pasangan" onclick="showMateriTab('pasangan'); playSound('click')" class="materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-gray-200 text-gray-700 hover:bg-gray-300">🤝 Pasangan</button>
+                <button id="tab-materi-bersusun" onclick="showMateriTab('bersusun'); playSound('click')" class="materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-gray-200 text-gray-700 hover:bg-gray-300">🧮 Bersusun</button>
+                <button id="tab-materi-video" onclick="showMateriTab('video'); playSound('click')" class="materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-gray-200 text-gray-700 hover:bg-gray-300">🎬 Video</button>
+            </div>
+
+            <!-- Konten Materi Dinamis -->
+            <div id="materi-content" class="bg-white/90 rounded-2xl p-5 sm:p-6 border-2 border-blue-200 shadow-inner min-h-[280px]">
+            </div>
+        </div>
+
+        <!-- 4. SCREEN MODE GURU & MURID -->
+        <div id="screen-guru" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-heading text-purple-800 flex items-center gap-2">
+                    👨‍🏫 Mode Guru & Murid
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="togglePakLuthfiModal(true); playSound('click')" class="btn-bounce bg-yellow-400 hover:bg-yellow-500 text-yellow-950 font-bold px-4 py-2 rounded-2xl shadow border-2 border-yellow-300 flex items-center gap-2 text-sm sm:text-base">
+                        💡 Penjelasan Pak Luthfi
+                    </button>
+                    <button onclick="switchScreen('screen-menu'); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-2xl border-2 border-gray-300 text-sm sm:text-base">
+                        🏠 Menu
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-2xl border-2 border-red-300 text-sm sm:text-base flex items-center gap-1.5 shadow">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2">
+                <!-- SISI KIRI: GURU (PAK LUTHFI) -->
+                <div class="bg-white rounded-3xl p-5 border-2 border-emerald-300 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2 text-xl font-heading text-emerald-800">
+                            <span>👨‍🏫</span> Pak Luthfi (Guru)
+                        </div>
+                    </div>
+
+                    <!-- Input Soal A + B & Kirim -->
+                    <div class="flex items-center gap-2 mb-4">
+                        <input type="number" id="input-num-a" placeholder="A" min="1" max="20" class="w-20 sm:w-24 text-center text-xl font-bold border-2 border-blue-300 rounded-2xl p-3 outline-none focus:border-blue-500">
+                        <span class="text-2xl font-bold text-gray-600">+</span>
+                        <input type="number" id="input-num-b" placeholder="B" min="1" max="20" class="w-20 sm:w-24 text-center text-xl font-bold border-2 border-blue-300 rounded-2xl p-3 outline-none focus:border-blue-500">
+                        <button onclick="sendTeacherQuestion()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-6 py-3 rounded-2xl shadow">
+                            Kirim
+                        </button>
+                    </div>
+
+                    <!-- Papan Coretan -->
+                    <div class="text-sm font-bold text-gray-500 mb-2">Papan Coretan:</div>
+                    <div class="relative bg-white rounded-2xl border-2 border-dashed border-blue-400 p-1 mb-4 overflow-hidden">
+                        <canvas id="scratch-canvas" class="w-full h-56 rounded-xl cursor-crosshair bg-slate-50"></canvas>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="clearCanvas()" class="btn-bounce bg-red-400 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-sm shadow">
+                            Hapus
+                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="setCanvasColor('#1d4ed8')" class="w-8 h-8 rounded-full bg-blue-700 border-2 border-white shadow"></button>
+                            <button onclick="setCanvasColor('#dc2626')" class="w-8 h-8 rounded-full bg-red-600 border-2 border-white shadow"></button>
+                            <button onclick="setCanvasColor('#059669')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-white shadow"></button>
+                            <button onclick="setCanvasColor('#000000')" class="w-8 h-8 rounded-full bg-black border-2 border-white shadow"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SISI KANAN: MURID -->
+                <div class="bg-white rounded-3xl p-5 border-2 border-amber-300 shadow-md flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 text-xl font-heading text-amber-800 mb-2">
+                            <span>👱‍♀️</span> Murid
+                        </div>
+
+                        <!-- Display Soal Guru -->
+                        <div id="student-question-display" class="text-center font-heading text-2xl text-gray-800 my-4 min-h-[40px] flex items-center justify-center">
+                            Tunggu soal dari guru...
+                        </div>
+
+                        <!-- Screen Input Jawaban -->
+                        <div class="bg-slate-50 border-2 border-amber-300 rounded-2xl p-3 text-center mb-4">
+                            <span id="student-answer-box" class="text-3xl font-bold text-gray-400 tracking-widest min-h-[44px] inline-block">
+                                Jawaban
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Numpad Keypad -->
+                    <div>
+                        <div class="grid grid-cols-3 gap-2 mb-2">
+                            <button onclick="appendStudentDigit(1)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">1</button>
+                            <button onclick="appendStudentDigit(2)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">2</button>
+                            <button onclick="appendStudentDigit(3)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">3</button>
+                            <button onclick="appendStudentDigit(4)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">4</button>
+                            <button onclick="appendStudentDigit(5)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">5</button>
+                            <button onclick="appendStudentDigit(6)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">6</button>
+                            <button onclick="appendStudentDigit(7)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">7</button>
+                            <button onclick="appendStudentDigit(8)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">8</button>
+                            <button onclick="appendStudentDigit(9)" class="btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">9</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <button onclick="appendStudentDigit(0)" class="col-span-2 btn-bounce bg-white border-2 border-gray-200 font-bold text-xl py-3 rounded-xl hover:bg-gray-50 text-gray-800">0</button>
+                            <button onclick="clearStudentAnswer()" class="btn-bounce bg-red-500 text-white font-bold text-xl py-3 rounded-xl hover:bg-red-600">
+                                <i class="fa-solid fa-delete-left"></i>
+                            </button>
+                        </div>
+                        <button onclick="submitStudentAnswer()" class="w-full btn-bounce bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold text-xl py-3.5 rounded-2xl shadow border-2 border-amber-300">
+                            Jawab!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL POPUP PENJELASAN PAK LUTHFI -->
+        <div id="modal-pak-luthfi" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative border-4 border-yellow-300 max-h-[90vh] overflow-y-auto">
+                <button onclick="togglePakLuthfiModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-5xl">👨‍🏫</span>
+                    <div>
+                        <h3 class="text-2xl font-bold font-heading text-purple-900">Penjelasan Bapak Luthfi</h3>
+                        <p class="text-sm text-gray-600">Tips dan trik penjumlahan 1-20 dari Bapak Luthfi!</p>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4 text-gray-700 space-y-2 text-sm sm:text-base mb-4">
+                    <p><b>1. Simpan Angka Besar:</b> Jika ada soal seperti <b>4 + 9</b>, simpan angka <b>9</b> di pikiranmu, lalu hitung maju <b>4</b> langkah (10, 11, 12, 13).</p>
+                    <p><b>2. Pasangan 10:</b> Hafalkan pasangan angka yang hasilnya 10 (1+9, 2+8, 3+7, 4+6, 5+5) agar berhitung jadi super cepat!</p>
+                </div>
+                <button onclick="speakPakLuthfiText()" class="w-full btn-bounce bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-volume-high"></i> Dengarkan Suara Pak Luthfi
+                </button>
+            </div>
+        </div>
+
+        <!-- 3B. SCREEN LATIHAN SOAL PENJUMLAHAN -->
+        <div id="screen-latihan" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+                <h2 class="text-3xl font-heading text-amber-700 flex items-center gap-2">
+                    📝 Latihan Soal Penjumlahan
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchScreen('screen-menu'); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl transition text-sm sm:text-base">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
+                    </button>
+                    <button onclick="goHome()" class="btn-bounce bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 py-2 rounded-xl border-2 border-purple-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🏠</span> Home
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl border-2 border-red-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 text-center shadow-inner mb-6">
+                <div id="practice-visuals" class="flex flex-wrap items-center justify-center gap-1 mb-4 min-h-[40px]"></div>
+                <div id="practice-question" class="text-4xl sm:text-5xl font-extrabold font-heading text-amber-900 mb-6">? + ? = ?</div>
+                <div id="practice-options" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-md mx-auto mb-4"></div>
+                <div id="practice-feedback" class="hidden font-bold text-lg mb-2"></div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="showPracticeHint()" class="btn-bounce bg-yellow-400 hover:bg-yellow-500 text-yellow-950 font-bold px-5 py-3 rounded-xl shadow border-2 border-yellow-300">
+                    💡 Minta Petunjuk
+                </button>
+                <button onclick="loadPracticeProblem(); playSound('click')" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow border-2 border-emerald-400">
+                    ➡️ Soal Berikutnya
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL PETUNJUK LATIHAN -->
+        <div id="modal-practice-hint" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border-4 border-amber-300 text-center">
+                <button onclick="togglePracticeHintModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+                <div class="text-4xl mb-2">💡</div>
+                <h3 class="text-xl font-bold font-heading text-amber-900 mb-3">Petunjuk Berhitung</h3>
+                <div id="hint-modal-body" class="text-gray-700 text-sm mb-4"></div>
+                <button onclick="togglePracticeHintModal(false)" class="btn-bounce bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-6 py-2 rounded-xl">Mengerti!</button>
+            </div>
+        </div>
+
+        <!-- MODAL PANDUAN PENGGUNAAN & MASKOT "SI MATHY" -->
+        <div id="modal-guide" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative border-4 border-purple-300 max-h-[90vh] overflow-y-auto">
+                <button onclick="toggleGuideModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+                
+                <!-- Mascot Header & Dialogue Bubble -->
+                <div class="flex flex-col sm:flex-row items-center gap-4 mb-6 bg-purple-50 p-4 rounded-2xl border-2 border-purple-200">
+                    <div class="mascot-bounce relative">
+                        <div class="w-24 h-24 bg-gradient-to-tr from-amber-400 via-pink-400 to-purple-500 rounded-full flex items-center justify-center text-5xl shadow-md border-4 border-white">
+                            🤖
+                        </div>
+                        <span class="absolute -bottom-2 right-0 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">SI MATHY</span>
+                    </div>
+                    <div class="flex-1 text-center sm:text-left">
+                        <h3 class="text-2xl font-bold font-heading text-purple-900">Halo! Aku Si Mathy 🤖</h3>
+                        <p class="text-sm text-gray-700 mt-1">Biarkan aku menjelaskan panduan lengkap cara bermain dan belajar di game <b>Math Play</b> ini!</p>
+                        <button onclick="speakMascotGuide()" class="mt-3 btn-bounce bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-2 mx-auto sm:mx-0 shadow">
+                            <i class="fa-solid fa-volume-high"></i> Dengarkan Suara Si Mathy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step by Step Guide List -->
+                <h4 class="text-lg font-bold font-heading text-purple-900 mb-3 flex items-center gap-2">
+                    📖 Langkah-Langkah Panduan:
+                </h4>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-start gap-3">
+                        <span class="text-2xl">🍎</span>
+                        <div>
+                            <span class="font-bold text-blue-900">1. Menu Materi Penjumlahan (1-20):</span>
+                            <p class="text-xs text-gray-600">Pelajari konsep penjumlahan dasar menggunakan gambar benda, melompat di garis bilangan, serta trik pasangan 10.</p>
+                        </div>
+                    </div>
+                    <div class="bg-pink-50 border border-pink-200 p-3 rounded-xl flex items-start gap-3">
+                        <span class="text-2xl">👨‍🏫</span>
+                        <div>
+                            <span class="font-bold text-pink-900">2. Mode Guru & Murid:</span>
+                            <p class="text-xs text-gray-600">Pak Luthfi bisa membuat soal dan mencoret di papan tulis. Murid dapat mengetik jawaban di keypad sebelah kanan.</p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-start gap-3">
+                        <span class="text-2xl">📝</span>
+                        <div>
+                            <span class="font-bold text-amber-900">3. Latihan Soal Penjumlahan:</span>
+                            <p class="text-xs text-gray-600">Latihan santai berhitung pisang! Jika kesulitan, kamu bisa menekan tombol <b>💡 Minta Petunjuk</b>.</p>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-start gap-3">
+                        <span class="text-2xl">🎮</span>
+                        <div>
+                            <span class="font-bold text-emerald-900">4. Game Matematika:</span>
+                            <p class="text-xs text-gray-600">Uji kecepatan berhitungmu di Kuis Klasik atau bertanding seru bersama teman di Perang Tank 2 Pemain!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. SCREEN PILIHAN GAME (SUB-MENU GAME) -->
+        <div id="screen-game-select" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+                <h2 class="text-3xl font-heading text-emerald-700 flex items-center gap-2">
+                    🎮 Pilihan Game Matematika
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchScreen('screen-menu'); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl transition text-sm sm:text-base">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
+                    </button>
+                    <button onclick="goHome()" class="btn-bounce bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 py-2 rounded-xl border-2 border-purple-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🏠</span> Home
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl border-2 border-red-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div onclick="switchScreen('screen-quiz-game'); showQuizDifficultySelect(); playSound('click')" class="btn-bounce bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="text-5xl mb-3">⭐</div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">Kuis Penjumlahan Klasik</h3>
+                    <p class="text-indigo-100 text-sm">Jawab soal sebanyak mungkin dalam 25 detik dengan 3 nyawa!</p>
+                </div>
+
+                <div onclick="switchScreen('screen-tank-game'); startTankGame(); playSound('click')" class="btn-bounce bg-gradient-to-br from-emerald-500 to-teal-700 p-6 rounded-2xl text-white shadow-xl cursor-pointer relative overflow-hidden group">
+                    <div class="text-5xl mb-3">🪖</div>
+                    <h3 class="text-2xl font-bold font-heading mb-1">Perang Tank (2 Pemain)</h3>
+                    <p class="text-emerald-100 text-sm">Adu cepat berhitung bersama temanmu untuk menembak tank lawan!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5B. GAME TANK BATTLE (2 PEMAIN) -->
+        <div id="screen-tank-game" class="hidden glass-card rounded-3xl p-4 sm:p-8 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-heading text-emerald-800 flex items-center gap-2">
+                    🪖 Perang Tank Penjumlahan (2 Pemain)
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchScreen('screen-game-select'); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl transition text-sm sm:text-base">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Pilihan Game
+                    </button>
+                    <button onclick="goHome()" class="btn-bounce bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 py-2 rounded-xl border-2 border-purple-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🏠</span> Home
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl border-2 border-red-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <!-- HP Bars -->
+            <div class="grid grid-cols-2 gap-4 mb-3">
+                <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-200">
+                    <div class="flex justify-between items-center font-bold text-blue-800 text-sm mb-1">
+                        <span>🔵 Pemain 1</span>
+                        <span>❤️ <span id="val-p1-hp">10</span>/10</span>
+                    </div>
+                    <div id="dots-p1" class="flex flex-wrap gap-1"></div>
+                </div>
+                <div class="bg-red-50 p-3 rounded-2xl border-2 border-red-200">
+                    <div class="flex justify-between items-center font-bold text-red-800 text-sm mb-1">
+                        <span>🔴 Pemain 2</span>
+                        <span>❤️ <span id="val-p2-hp">10</span>/10</span>
+                    </div>
+                    <div id="dots-p2" class="flex flex-wrap gap-1"></div>
+                </div>
+            </div>
+
+            <!-- Arena Pertempuran -->
+            <div id="tank-arena" class="relative w-full h-36 sm:h-44 bg-gradient-to-b from-sky-200 via-sky-100 to-emerald-400 rounded-2xl border-4 border-emerald-600 overflow-hidden mb-4 shadow-inner">
+                <!-- Soal di Tengah Atas Arena -->
+                <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-white/95 px-6 py-1.5 rounded-full border-2 border-emerald-500 shadow-md z-10">
+                    <span id="tank-question-display" class="text-2xl sm:text-3xl font-extrabold font-heading text-emerald-900">? + ? = ?</span>
+                </div>
+
+                <!-- Tank P1 (Kiri) -->
+                <div id="tank-p1" class="absolute bottom-3 left-[4%] transition-all duration-300">
+                    <div id="tank-p1-icon" class="tank-body w-20 sm:w-24 h-14 sm:h-16">
+                        <svg viewBox="0 0 120 75" class="w-full h-full drop-shadow-md">
+                            <!-- Laras Meriam -->
+                            <rect x="70" y="20" width="45" height="9" rx="4" fill="#1e40af" stroke="#1e3a8a" stroke-width="2"/>
+                            <!-- Kubah Tank -->
+                            <path d="M35 28 C35 16, 75 16, 75 28 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2.5"/>
+                            <!-- Badan Tank -->
+                            <rect x="18" y="28" width="76" height="22" rx="8" fill="#2563eb" stroke="#1e3a8a" stroke-width="2.5"/>
+                            <!-- Roda / Rantai -->
+                            <rect x="12" y="46" width="88" height="20" rx="10" fill="#334155" stroke="#0f172a" stroke-width="2.5"/>
+                            <circle cx="25" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="45" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="65" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="85" cy="56" r="5" fill="#94a3b8"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Peluru -->
+                <div id="tank-bullet" class="hidden absolute bottom-8 w-5 h-5 bg-amber-500 rounded-full border-2 border-red-600 shadow-lg z-20"></div>
+
+                <!-- Tank P2 (Kanan) -->
+                <div id="tank-p2" class="absolute bottom-3 right-[4%] transition-all duration-300">
+                    <div id="tank-p2-icon" class="tank-body scale-x-[-1] w-20 sm:w-24 h-14 sm:h-16">
+                        <svg viewBox="0 0 120 75" class="w-full h-full drop-shadow-md">
+                            <!-- Laras Meriam -->
+                            <rect x="70" y="20" width="45" height="9" rx="4" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
+                            <!-- Kubah Tank -->
+                            <path d="M35 28 C35 16, 75 16, 75 28 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="2.5"/>
+                            <!-- Badan Tank -->
+                            <rect x="18" y="28" width="76" height="22" rx="8" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.5"/>
+                            <!-- Roda / Rantai -->
+                            <rect x="12" y="46" width="88" height="20" rx="10" fill="#334155" stroke="#0f172a" stroke-width="2.5"/>
+                            <circle cx="25" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="45" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="65" cy="56" r="5" fill="#94a3b8"/>
+                            <circle cx="85" cy="56" r="5" fill="#94a3b8"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keypad P1 & P2 (Format 3 Kolom seperti Mode Guru & Murid) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Kontrol Pemain 1 -->
+                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-blue-900">🔵 Kontrol Pemain 1</span>
+                        <span id="box-ans-p1" class="bg-white px-4 py-1 rounded-xl border-2 border-blue-300 font-bold text-2xl text-blue-900 min-w-[70px] text-center">-</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <button onclick="pressP1Key(1)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">1</button>
+                        <button onclick="pressP1Key(2)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">2</button>
+                        <button onclick="pressP1Key(3)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">3</button>
+                        <button onclick="pressP1Key(4)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">4</button>
+                        <button onclick="pressP1Key(5)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">5</button>
+                        <button onclick="pressP1Key(6)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">6</button>
+                        <button onclick="pressP1Key(7)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">7</button>
+                        <button onclick="pressP1Key(8)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">8</button>
+                        <button onclick="pressP1Key(9)" class="btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">9</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <button onclick="pressP1Key(0)" class="col-span-2 btn-bounce bg-white border-2 border-blue-200 font-bold text-xl py-2.5 rounded-xl hover:bg-blue-100 text-gray-800">0</button>
+                        <button onclick="clearP1Key()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold text-xl py-2.5 rounded-xl">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                    </div>
+                    <button onclick="submitP1Answer()" class="w-full btn-bounce bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-3 rounded-xl shadow">
+                        🔥 Tembak!
+                    </button>
+                </div>
+
+                <!-- Kontrol Pemain 2 -->
+                <div class="bg-red-50 p-4 rounded-2xl border-2 border-red-200">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-red-900">🔴 Kontrol Pemain 2</span>
+                        <span id="box-ans-p2" class="bg-white px-4 py-1 rounded-xl border-2 border-red-300 font-bold text-2xl text-red-900 min-w-[70px] text-center">-</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <button onclick="pressP2Key(1)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">1</button>
+                        <button onclick="pressP2Key(2)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">2</button>
+                        <button onclick="pressP2Key(3)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">3</button>
+                        <button onclick="pressP2Key(4)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">4</button>
+                        <button onclick="pressP2Key(5)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">5</button>
+                        <button onclick="pressP2Key(6)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">6</button>
+                        <button onclick="pressP2Key(7)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">7</button>
+                        <button onclick="pressP2Key(8)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">8</button>
+                        <button onclick="pressP2Key(9)" class="btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">9</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <button onclick="pressP2Key(0)" class="col-span-2 btn-bounce bg-white border-2 border-red-200 font-bold text-xl py-2.5 rounded-xl hover:bg-red-100 text-gray-800">0</button>
+                        <button onclick="clearP2Key()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold text-xl py-2.5 rounded-xl">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                    </div>
+                    <button onclick="submitP2Answer()" class="w-full btn-bounce bg-red-600 hover:bg-red-700 text-white font-bold text-lg py-3 rounded-xl shadow">
+                        🔥 Tembak!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5A. GAME KUIS PENJUMLAHAN KLASIK -->
+        <div id="screen-quiz-game" class="hidden glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-heading text-indigo-700 flex items-center gap-2">
+                    ⭐ Kuis Penjumlahan Klasik
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="switchScreen('screen-game-select'); clearInterval(quizInterval); playSound('click')" class="btn-bounce bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl transition text-sm sm:text-base">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Pilihan Game
+                    </button>
+                    <button onclick="goHome()" class="btn-bounce bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 py-2 rounded-xl border-2 border-purple-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🏠</span> Home
+                    </button>
+                    <button onclick="exitGame()" class="btn-bounce bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-xl border-2 border-red-300 transition text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🚪</span> Exit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pilih Tingkat Kesulitan -->
+            <div id="quiz-difficulty-selector" class="text-center py-4">
+                <h3 class="text-2xl font-bold font-heading text-indigo-900 mb-4">Pilih Tingkat Kesulitan:</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button onclick="selectQuizDifficulty('easy')" class="btn-bounce bg-emerald-400 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow text-xl">🌱 Mudah (1-10)</button>
+                    <button onclick="selectQuizDifficulty('medium')" class="btn-bounce bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold py-4 px-6 rounded-2xl shadow text-xl">🔥 Sedang (1-15)</button>
+                    <button onclick="selectQuizDifficulty('hard')" class="btn-bounce bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-6 rounded-2xl shadow text-xl">🚀 Sulit (1-20)</button>
+                </div>
+            </div>
+
+            <!-- Quiz Gameplay View -->
+            <div id="quiz-gameplay" class="hidden">
+                <div class="flex justify-between items-center bg-indigo-50 p-4 rounded-2xl border border-indigo-200 mb-6">
+                    <div class="flex items-center gap-2 text-red-500 font-bold text-xl">
+                        ❤️ <span id="quiz-lives">3</span> Nyawa
+                    </div>
+                    <div class="flex items-center gap-2 text-indigo-900 font-bold text-xl">
+                        ⏱️ <span id="quiz-timer">25</span>s
+                    </div>
+                    <div class="flex items-center gap-2 text-emerald-700 font-bold text-xl">
+                        🏆 <span id="quiz-score">0</span>
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div id="quiz-question-text" class="text-5xl font-extrabold font-heading text-indigo-900 mb-6">? + ? = ?</div>
+                    <div id="quiz-options-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-md mx-auto"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Result View -->
+            <div id="quiz-result-view" class="hidden text-center py-4">
+                <h3 class="text-3xl font-extrabold font-heading text-purple-900 mb-2">Permainan Selesai!</h3>
+                <p id="quiz-end-reason" class="text-lg text-gray-600 font-bold mb-6">Waktu Habis!</p>
+                
+                <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-6 max-w-sm mx-auto mb-6 shadow-inner">
+                    <div class="text-gray-600 text-sm font-bold uppercase tracking-wider mb-1">Skor Akhir Kamu</div>
+                    <div id="quiz-final-score" class="text-5xl font-extrabold text-indigo-700 font-heading">0</div>
+                </div>
+
+                <button onclick="showQuizDifficultySelect(); playSound('click')" class="btn-bounce bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-heading text-xl px-8 py-4 rounded-full shadow-lg border-2 border-white">
+                    🔄 Coba Lagi / Pilih Tingkat Kesulitan
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- SOUND & AUDIO TOGGLE STATE ---
+        let audioEnabled = true;
+        let bgmStarted = false;
+        let bgmInterval = null;
+        let bgmStep = 0;
+
+        // Melodi ceria sederhana (frekuensi nada dalam Hz)
+        const bgmMelody = [
+            523.25, 659.25, 783.99, 659.25, // C5, E5, G5, E5
+            587.33, 698.46, 880.00, 698.46, // D5, F5, A5, F5
+            523.25, 659.25, 783.99, 1046.50, // C5, E5, G5, C6
+            783.99, 659.25, 587.33, 523.25  // G5, E5, D5, C5
+        ];
+
+        function startBGM() {
+            bgmStarted = true;
+            if (!audioEnabled || bgmInterval) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                bgmInterval = setInterval(() => {
+                    if (!audioEnabled) return;
+                    const freq = bgmMelody[bgmStep % bgmMelody.length];
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    
+                    // Volume lembut agar tidak mengganggu efek suara
+                    gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.35);
+                    bgmStep++;
+                }, 400);
+            } catch (e) {
+                // Abaikan jika audio context belum siap
+            }
+        }
+
+        function stopBGM() {
+            if (bgmInterval) {
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-text');
+            if (audioEnabled) {
+                icon.innerText = '🔊';
+                text.innerText = 'Suara: ON';
+                if (bgmStarted) startBGM();
+            } else {
+                icon.innerText = '🔇';
+                text.innerText = 'Suara: OFF';
+                stopBGM();
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        // --- SCREEN NAVIGATION ---
+        function switchScreen(screenId) {
+            const screens = ['screen-splash', 'screen-menu', 'screen-materi', 'screen-guru', 'screen-game-select', 'screen-quiz-game', 'screen-tank-game', 'screen-latihan'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('screen-animate');
+                }
+            });
+            const activeScreen = document.getElementById(screenId);
+            if (activeScreen) {
+                activeScreen.classList.remove('hidden');
+                void activeScreen.offsetWidth; // Trigger reflow
+                activeScreen.classList.add('screen-animate');
+            }
+        }
+
+        function goHome() {
+            if (typeof quizInterval !== 'undefined' && quizInterval) {
+                clearInterval(quizInterval);
+            }
+            switchScreen('screen-menu');
+            if (typeof playSound === 'function') playSound('click');
+        }
+
+        function exitGame() {
+            if (typeof quizInterval !== 'undefined' && quizInterval) {
+                clearInterval(quizInterval);
+            }
+            stopBGM();
+            bgmStarted = false;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            switchScreen('screen-splash');
+            if (typeof playSound === 'function') playSound('click');
+        }
+
+        // --- MODAL PANDUAN PENGGUNAAN & MASKOT "SI MATHY" ---
+        function toggleGuideModal(show) {
+            const modal = document.getElementById('modal-guide');
+            if (modal) {
+                if (show) modal.classList.remove('hidden');
+                else {
+                    modal.classList.add('hidden');
+                    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                }
+            }
+        }
+
+        function togglePakLuthfiModal(show) {
+            const modal = document.getElementById('modal-pak-luthfi');
+            if (modal) {
+                if (show) modal.classList.remove('hidden');
+                else {
+                    modal.classList.add('hidden');
+                    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                }
+            }
+        }
+
+        function speakMascotGuide() {
+            if (!audioEnabled) {
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const textGuide = "Halo! Aku Si Mathy. Selamat datang di Math Play! Kamu bisa memilih menu Materi untuk belajar penjumlahan 1 sampai 20, Mode Guru dan Murid bersama Pak Luthfi, Latihan Soal berhitung pisang, atau bermain Game Kuis Klasik dan Perang Tank dua pemain!";
+                const msg = new SpeechSynthesisUtterance(textGuide);
+                msg.lang = 'id-ID';
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // --- WEB AUDIO API SOUND EFFECTS ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!audioEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(680, now + 0.06);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'shoot') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                }
+            } catch (e) {
+                // Ignore audio context errors
+            }
+        }
+
+        function speakPakLuthfiText() {
+            if (!audioEnabled) {
+                alert("Aktifkan suara terlebih dahulu melalui tombol di pojok kanan atas.");
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance("Halo anak-anak! Bapak Luthfi punya tips penjumlahan 1 sampai 20. Simpan angka yang lebih besar di dalam pikiran, lalu hitung maju menggunakan jari tangan!");
+                msg.lang = 'id-ID';
+                window.speechSynthesis.speak(msg);
+            } else {
+                alert("Fitur suara tidak didukung di browser ini.");
+            }
+        }
+
+        // --- MATERI TAB NAVIGATION ---
+        function showMateriTab(tabName) {
+            const tabs = ['tujuan', 'maju', 'pasangan', 'bersusun', 'video'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-materi-' + t);
+                if (btn) {
+                    btn.className = 'materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-gray-200 text-gray-700 hover:bg-gray-300';
+                }
+            });
+            const activeBtn = document.getElementById('tab-materi-' + tabName);
+            if (activeBtn) {
+                activeBtn.className = 'materi-tab px-3 sm:px-4 py-2 rounded-xl font-bold text-sm sm:text-base bg-blue-600 text-white shadow';
+            }
+
+            const content = document.getElementById('materi-content');
+            if (tabName === 'tujuan') {
+                content.innerHTML = `
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-3 font-heading">🎯 Tujuan Pembelajaran</h3>
+                    <p class="text-gray-700 mb-4 font-bold">Setelah mengikuti pembelajaran, murid mampu:</p>
+                    <ol class="space-y-2 text-gray-700 text-sm sm:text-base">
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">1.</span> Menghitung maju untuk menentukan hasil penjumlahan bilangan cacah dengan tepat.</li>
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">2.</span> Menentukan pasangan bilangan yang dapat membentuk suatu bilangan tertentu.</li>
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">3.</span> Menyelesaikan penjumlahan bilangan cacah menggunakan cara bersusun.</li>
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">4.</span> Menyelesaikan penjumlahan bersusun tanpa menyimpan dengan tepat.</li>
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">5.</span> Menyelesaikan penjumlahan bersusun dengan menyimpan dengan benar.</li>
+                        <li class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2"><span class="font-bold text-blue-700">6.</span> Menerapkan penjumlahan dalam permasalahan sederhana di kehidupan sehari-hari.</li>
+                    </ol>
+                `;
+            } else if (tabName === 'maju') {
+                content.innerHTML = `
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-3 font-heading">🏃 1. Menghitung Maju</h3>
+                    <p class="text-gray-700 mb-4">Menghitung maju adalah menghitung bilangan secara berurutan dari suatu bilangan ke bilangan yang lebih besar.</p>
+                    <div class="bg-blue-50 p-5 rounded-2xl border-2 border-blue-200 text-center mb-4">
+                        <div class="text-sm font-bold text-blue-700 uppercase mb-1">Contoh Soal</div>
+                        <div class="text-3xl font-extrabold text-blue-900 font-heading mb-3">5 + 3 = ?</div>
+                        <p class="text-gray-700 text-sm mb-2">Mulai dari angka <b>5</b>, kemudian maju <b>3</b> langkah:</p>
+                        <div class="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-blue-200 shadow-sm text-lg font-bold text-blue-800 mb-3">
+                            <span>5</span> <span class="text-blue-400">➔</span> <span>6</span> <span class="text-blue-400">➔</span> <span>7</span> <span class="text-blue-400">➔</span> <span class="bg-emerald-500 text-white px-2.5 py-0.5 rounded-full">8</span>
+                        </div>
+                        <div class="font-bold text-xl text-emerald-700">Jadi: 5 + 3 = 8</div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm text-amber-900">
+                        <b>💡 Kesimpulan:</b> Menghitung maju dapat membantu kita menemukan hasil penjumlahan dengan cara menambahkan beberapa langkah ke depan.
+                    </div>
+                `;
+            } else if (tabName === 'pasangan') {
+                content.innerHTML = `
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-3 font-heading">🤝 2. Pasangan Bilangan</h3>
+                    <p class="text-gray-700 mb-4">Pasangan bilangan adalah dua bilangan yang jika dijumlahkan akan menghasilkan bilangan tertentu.</p>
+                    <div class="bg-blue-50 p-5 rounded-2xl border-2 border-blue-200">
+                        <div class="font-bold text-blue-900 mb-3 text-center">Contoh Pasangan Bilangan yang Menghasilkan 10:</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                            <div class="bg-white p-3 rounded-xl border border-blue-200 shadow-sm">
+                                <span class="text-xs font-bold text-gray-400 block">a.</span>
+                                <span class="text-xl font-extrabold text-blue-800 font-heading">1 + 9 = 10</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-blue-200 shadow-sm">
+                                <span class="text-xs font-bold text-gray-400 block">b.</span>
+                                <span class="text-xl font-extrabold text-blue-800 font-heading">2 + 8 = 10</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-blue-200 shadow-sm">
+                                <span class="text-xs font-bold text-gray-400 block">c.</span>
+                                <span class="text-xl font-extrabold text-blue-800 font-heading">3 + 7 = 10</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tabName === 'bersusun') {
+                content.innerHTML = `
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-2 font-heading">🧮 3. Penjumlahan Bersusun</h3>
+                    <p class="text-gray-700 text-sm sm:text-base mb-4">Penjumlahan bersusun adalah cara menjumlahkan dengan menempatkan angka sesuai nilai tempatnya. Angka satuan sejajar dengan satuan, puluhan sejajar dengan puluhan.</p>
+
+                    <!-- Contoh Utama -->
+                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 mb-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div class="bg-white px-6 py-3 rounded-xl border border-blue-200 font-mono text-xl font-bold text-right shadow-sm">
+                            <div>12</div>
+                            <div class="border-b-2 border-gray-800 pb-1">+ &nbsp;5</div>
+                            <div class="text-blue-700 pt-1">17</div>
+                        </div>
+                        <div class="text-sm text-gray-700 text-center sm:text-left">
+                            <p><b>Satuan:</b> 2 + 5 = 7</p>
+                            <p><b>Puluhan:</b> 1 + 0 = 1</p>
+                            <p class="font-bold text-blue-800 mt-1">Jadi 12 + 5 = 17</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- a. Tanpa Menyimpan -->
+                        <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200">
+                            <h4 class="font-bold text-emerald-900 mb-1">a. Tanpa menyimpan</h4>
+                            <p class="text-xs text-gray-600 mb-3">Jumlah satuan kurang dari 10.</p>
+                            <div class="flex justify-center gap-4">
+                                <div class="bg-white p-4 rounded-xl border border-emerald-200 font-mono text-xl font-bold text-right w-28 shadow-sm">
+                                    <div>13</div>
+                                    <div class="border-b-2 border-gray-800 pb-1">+ &nbsp;6</div>
+                                    <div class="text-emerald-700 pt-1">19</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-emerald-200 font-mono text-xl font-bold text-right w-28 shadow-sm">
+                                    <div>11</div>
+                                    <div class="border-b-2 border-gray-800 pb-1">+ &nbsp;8</div>
+                                    <div class="text-emerald-700 pt-1">19</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- b. Dengan Menyimpan -->
+                        <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
+                            <h4 class="font-bold text-amber-900 mb-1">b. Dengan menyimpan</h4>
+                            <p class="text-xs text-gray-600 mb-3">Jumlah satuan 10 atau lebih. Satuan ditulis di tempat satuan, 1 puluhan disimpan ke tempat puluhan.</p>
+                            <div class="flex justify-center gap-4 mb-2">
+                                <div class="bg-white p-4 rounded-xl border border-amber-200 font-mono text-xl font-bold text-right w-28 shadow-sm">
+                                    <div class="text-xs text-red-500 pr-3">1</div>
+                                    <div>8</div>
+                                    <div class="border-b-2 border-gray-800 pb-1">+ &nbsp;5</div>
+                                    <div class="text-amber-700 pt-1">13</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-amber-200 font-mono text-xl font-bold text-right w-28 shadow-sm">
+                                    <div class="text-xs text-red-500 pr-3">1</div>
+                                    <div>9</div>
+                                    <div class="border-b-2 border-gray-800 pb-1">+ &nbsp;6</div>
+                                    <div class="text-amber-700 pt-1">15</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center text-gray-600">
+                                8 + 5: satuan 13, tulis 3, simpan 1 puluhan, hasil 13.<br>
+                                9 + 6: satuan 15, tulis 5, simpan 1 puluhan, hasil 15.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (tabName === 'video') {
+                content.innerHTML = `
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-2 font-heading">🎬 Video Pembelajaran</h3>
+                    <p class="text-gray-600 text-sm mb-4">Tonton video pembelajaran penjumlahan di bawah ini atau tempelkan tautan YouTube pilihan guru.</p>
+                    
+                    <!-- Input Link YouTube Opsional -->
+                    <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                        <input type="text" id="video-url-input" placeholder="Tempel link YouTube di sini (contoh: https://youtu.be/...)" class="flex-1 border-2 border-blue-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500">
+                        <button onclick="loadCustomVideo()" class="btn-bounce bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-sm shadow">
+                            Putar Video
+                        </button>
+                    </div>
+                    <p id="video-feedback" class="text-xs font-bold mb-3 hidden"></p>
+
+                    <!-- Area Pemutar Video (Aspect Ratio 16:9) -->
+                    <div class="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden border-4 border-blue-200 shadow-lg">
+                        <iframe id="materi-video-frame" class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Video Pembelajaran Penjumlahan" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                `;
+            }
+        }
+
+        function loadCustomVideo() {
+            const inputEl = document.getElementById('video-url-input');
+            const frame = document.getElementById('materi-video-frame');
+            const feedback = document.getElementById('video-feedback');
+            if (!inputEl || !frame) return;
+
+            const input = inputEl.value.trim();
+            if (!input) {
+                if (feedback) {
+                    feedback.innerText = '⚠️ Silakan tempelkan link YouTube terlebih dahulu.';
+                    feedback.className = 'text-xs font-bold mb-3 text-amber-600';
+                    feedback.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // Ekstrak ID video YouTube dari berbagai format URL (watch, youtu.be, shorts, embed, live, atau ID langsung)
+            let videoId = '';
+            const ytRegex = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = input.match(ytRegex);
+            if (match && match[1]) {
+                videoId = match[1];
+            } else if (/^[a-zA-Z0-9_-]{11}$/.test(input)) {
+                videoId = input;
+            }
+
+            if (videoId) {
+                frame.src = `https://www.youtube.com/embed/${videoId}?rel=0`;
+                if (feedback) {
+                    feedback.innerText = '🎉 Hore! Video pembelajaran siap ditonton!';
+                    feedback.className = 'text-xs font-bold mb-3 text-emerald-600';
+                    feedback.classList.remove('hidden');
+                }
+                playSound('click');
+            } else {
+                if (feedback) {
+                    feedback.innerText = '✨ Ups! Yuk tempelkan link video YouTube yang tepat agar videonya bisa diputar!';
+                    feedback.className = 'text-xs font-bold mb-3 text-amber-600';
+                    feedback.classList.remove('hidden');
+                }
+                playSound('wrong');
+            }
+        }
+
+        // --- MODE GURU & MURID (CANVAS & SOAL) ---
+        let currentTeacherQuestion = null;
+        let studentInput = '';
+        let canvasColor = '#1d4ed8';
+        let isDrawing = false;
+        let boardInitialized = false;
+
+        function initBoard() {
+            const canvas = document.getElementById('scratch-canvas');
+            if (!canvas) return;
+
+            // Resize canvas to match its CSS container
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width || 400;
+            canvas.height = rect.height || 224;
+
+            if (boardInitialized) return;
+            boardInitialized = true;
+
+            const ctx = canvas.getContext('2d');
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 4;
+
+            function getPos(e) {
+                const r = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - r.left) * (canvas.width / r.width),
+                    y: (clientY - r.top) * (canvas.height / r.height)
+                };
+            }
+
+            function startDraw(e) {
+                isDrawing = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                if (e.cancelable) e.preventDefault();
+                const pos = getPos(e);
+                ctx.strokeStyle = canvasColor;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+
+            function stopDraw() {
+                isDrawing = false;
+                ctx.closePath();
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mouseleave', stopDraw);
+
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDraw);
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('scratch-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            playSound('click');
+        }
+
+        function setCanvasColor(color) {
+            canvasColor = color;
+            playSound('click');
+        }
+
+        function sendTeacherQuestion() {
+            const a = parseInt(document.getElementById('input-num-a').value);
+            const b = parseInt(document.getElementById('input-num-b').value);
+            if (isNaN(a) || isNaN(b)) return;
+
+            currentTeacherQuestion = { a, b, ans: a + b };
+            document.getElementById('student-question-display').innerHTML = `
+                <span class="bg-amber-100 text-amber-900 px-5 py-2 rounded-2xl border-2 border-amber-300 font-extrabold text-3xl shadow-sm">
+                    ${a} + ${b} = ?
+                </span>
+            `;
+            clearStudentAnswer();
+            playSound('click');
+        }
+
+        function appendStudentDigit(digit) {
+            if (studentInput.length < 3) {
+                studentInput += digit;
+                const box = document.getElementById('student-answer-box');
+                box.innerText = studentInput;
+                box.classList.remove('text-gray-400');
+                box.classList.add('text-gray-800');
+                playSound('click');
+            }
+        }
+
+        function clearStudentAnswer() {
+            studentInput = '';
+            const box = document.getElementById('student-answer-box');
+            box.innerText = 'Jawaban';
+            box.classList.remove('text-gray-800');
+            box.classList.add('text-gray-400');
+        }
+
+        function submitStudentAnswer() {
+            if (!currentTeacherQuestion) {
+                alert("Belum ada soal dari guru!");
+                return;
+            }
+            if (studentInput === '') return;
+
+            const ans = parseInt(studentInput);
+            if (ans === currentTeacherQuestion.ans) {
+                playSound('correct');
+                confetti({ particleCount: 70, spread: 60 });
+                alert("🎉 Jawaban Murid Benar!");
+            } else {
+                playSound('wrong');
+                alert("❌ Jawaban kurang tepat, coba hitung lagi!");
+            }
+
+            // Reset otomatis ke tampilan awal
+            resetTeacherStudentMode();
+        }
+
+        function resetTeacherStudentMode() {
+            currentTeacherQuestion = null;
+            document.getElementById('input-num-a').value = '';
+            document.getElementById('input-num-b').value = '';
+            document.getElementById('student-question-display').innerHTML = 'Tunggu soal dari guru...';
+            clearStudentAnswer();
+        }
+
+        // --- TANK BATTLE GAME WITH SVG TANKS & 10 LIVES ---
+        let currentTankQuestion = { a: 0, b: 0, ans: 0 };
+        let p1Hp = 10, p2Hp = 10;
+        let p1Input = "", p2Input = "";
+        let isTankAnimating = false;
+        const maxHp = 10;
+
+        function startTankGame() {
+            p1Hp = 10;
+            p2Hp = 10;
+            p1Input = "";
+            p2Input = "";
+            isTankAnimating = false;
+            updateTankPositions();
+            renderScoreDots();
+            nextTankQuestion();
+        }
+
+        function renderScoreDots() {
+            const d1 = document.getElementById('dots-p1');
+            const d2 = document.getElementById('dots-p2');
+            const hp1El = document.getElementById('val-p1-hp');
+            const hp2El = document.getElementById('val-p2-hp');
+
+            if (hp1El) hp1El.innerText = p1Hp;
+            if (hp2El) hp2El.innerText = p2Hp;
+
+            if (d1 && d2) {
+                d1.innerHTML = '';
+                d2.innerHTML = '';
+                for (let i = 0; i < maxHp; i++) {
+                    d1.innerHTML += `<div class="w-3 h-3 rounded-full ${i < p1Hp ? 'bg-blue-600' : 'bg-gray-300'}"></div>`;
+                    d2.innerHTML += `<div class="w-3 h-3 rounded-full ${i < p2Hp ? 'bg-red-500' : 'bg-gray-300'}"></div>`;
+                }
+            }
+        }
+
+        function nextTankQuestion() {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            currentTankQuestion = { a, b, ans: a + b };
+            const display = document.getElementById('tank-question-display');
+            if (display) display.innerText = `${a} + ${b} = ?`;
+            clearP1Key();
+            clearP2Key();
+        }
+
+        function updateTankPositions() {
+            const t1 = document.getElementById('tank-p1');
+            const t2 = document.getElementById('tank-p2');
+            if (t1 && t2) {
+                const step = 30;
+                // Move tanks closer as HP decreases
+                const leftOffset = 4 + ((maxHp - p1Hp) / maxHp) * step;
+                const rightOffset = 4 + ((maxHp - p2Hp) / maxHp) * step;
+                t1.style.left = `${leftOffset}%`;
+                t2.style.right = `${rightOffset}%`;
+            }
+        }
+
+        function shootTankBullet(shooter) {
+            isTankAnimating = true;
+            playSound('shoot');
+
+            const bullet = document.getElementById('tank-bullet');
+            const t1 = document.getElementById('tank-p1');
+            const t2 = document.getElementById('tank-p2');
+            const targetIcon = shooter === 1 ? document.getElementById('tank-p2-icon') : document.getElementById('tank-p1-icon');
+
+            if (!bullet || !t1 || !t2) return;
+
+            const t1Rect = t1.getBoundingClientRect();
+            const t2Rect = t2.getBoundingClientRect();
+            const arenaRect = document.getElementById('tank-arena').getBoundingClientRect();
+
+            let startX, targetX;
+            if (shooter === 1) {
+                startX = t1Rect.right - arenaRect.left - 10;
+                targetX = t2Rect.left - arenaRect.left + 10;
+            } else {
+                startX = t2Rect.left - arenaRect.left + 10;
+                targetX = t1Rect.right - arenaRect.left - 10;
+            }
+
+            bullet.style.left = `${startX}px`;
+            bullet.classList.remove('hidden');
+
+            let currentX = startX;
+            const speed = (targetX - startX) / 15;
+            let frame = 0;
+
+            function animateBullet() {
+                frame++;
+                currentX += speed;
+                bullet.style.left = `${currentX}px`;
+
+                if (frame < 15) {
+                    requestAnimationFrame(animateBullet);
+                } else {
+                    bullet.classList.add('hidden');
+                    playSound('hit');
+                    if (targetIcon) {
+                        targetIcon.classList.add('scale-125', 'rotate-12');
+                        setTimeout(() => targetIcon.classList.remove('scale-125', 'rotate-12'), 300);
+                    }
+
+                    setTimeout(() => {
+                        isTankAnimating = false;
+                        if (shooter === 1) p2Hp--;
+                        else p1Hp--;
+                        renderScoreDots();
+                        updateTankPositions();
+                        checkTankWinner();
+                    }, 300);
+                }
+            }
+            requestAnimationFrame(animateBullet);
+        }
+
+        function pressP1Key(num) {
+            if (isTankAnimating) return;
+            if (p1Input.length < 3) { p1Input += num; document.getElementById('box-ans-p1').innerText = p1Input; playSound('click'); }
+        }
+        function clearP1Key() { p1Input = ""; const el = document.getElementById('box-ans-p1'); if (el) el.innerText = "-"; }
+        function submitP1Answer() {
+            if (isTankAnimating) return;
+            if (parseInt(p1Input) === currentTankQuestion.ans) {
+                shootTankBullet(1);
+            } else {
+                playSound('wrong');
+                clearP1Key();
+            }
+        }
+
+        function pressP2Key(num) {
+            if (isTankAnimating) return;
+            if (p2Input.length < 3) { p2Input += num; document.getElementById('box-ans-p2').innerText = p2Input; playSound('click'); }
+        }
+        function clearP2Key() { p2Input = ""; const el = document.getElementById('box-ans-p2'); if (el) el.innerText = "-"; }
+        function submitP2Answer() {
+            if (isTankAnimating) return;
+            if (parseInt(p2Input) === currentTankQuestion.ans) {
+                shootTankBullet(2);
+            } else {
+                playSound('wrong');
+                clearP2Key();
+            }
+        }
+
+        function checkTankWinner() {
+            if (p2Hp <= 0) {
+                confetti({ particleCount: 120, spread: 80 });
+                alert("🏆 PEMAIN 1 MENANG! Tank Pemain 2 Berhasil Dihancurkan!");
+                startTankGame();
+            } else if (p1Hp <= 0) {
+                confetti({ particleCount: 120, spread: 80 });
+                alert("🏆 PEMAIN 2 MENANG! Tank Pemain 1 Berhasil Dihancurkan!");
+                startTankGame();
+            } else {
+                nextTankQuestion();
+            }
+        }
+
+        // --- KUIS PENJUMLAHAN KLASIK (DIFFICULTY + 25s CONTINUOUS TIMER + 3 LIVES) ---
+        let quizScore = 0;
+        let quizLives = 3;
+        let quizTimerVal = 25;
+        let quizInterval = null;
+        let quizCurrentAns = 0;
+        let quizDifficulty = 'easy'; // 'easy' (1-10), 'medium' (1-15), 'hard' (1-20)
+
+        function showQuizDifficultySelect() {
+            clearInterval(quizInterval);
+            document.getElementById('quiz-difficulty-selector').classList.remove('hidden');
+            document.getElementById('quiz-gameplay').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.add('hidden');
+        }
+
+        function selectQuizDifficulty(diff) {
+            quizDifficulty = diff;
+            document.getElementById('quiz-difficulty-selector').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.add('hidden');
+            document.getElementById('quiz-gameplay').classList.remove('hidden');
+            startQuizGame();
+        }
+
+        function startQuizGame() {
+            clearInterval(quizInterval);
+            quizScore = 0;
+            quizLives = 3;
+            quizTimerVal = 25;
+            document.getElementById('quiz-score').innerText = quizScore;
+            document.getElementById('quiz-lives').innerText = quizLives;
+            document.getElementById('quiz-timer').innerText = quizTimerVal;
+
+            // Timer berjalan 25 detik terus menerus per sesi game
+            quizInterval = setInterval(() => {
+                quizTimerVal--;
+                document.getElementById('quiz-timer').innerText = quizTimerVal;
+                if (quizTimerVal <= 0) {
+                    endQuizGame("⏱️ Waktu 25 Detik Habis!");
+                }
+            }, 1000);
+
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            if (quizLives <= 0) {
+                endQuizGame("❤️ Nyawa Kamu Habis!");
+                return;
+            }
+
+            let maxNum = 5;
+            if (quizDifficulty === 'easy') maxNum = 5;       // Hasil maks 10
+            else if (quizDifficulty === 'medium') maxNum = 8; // Hasil maks 15
+            else maxNum = 10;                                // Hasil maks 20
+
+            const a = Math.floor(Math.random() * maxNum) + 1;
+            const b = Math.floor(Math.random() * maxNum) + 1;
+            quizCurrentAns = a + b;
+            document.getElementById('quiz-question-text').innerText = `${a} + ${b} = ?`;
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            let opts = [quizCurrentAns, quizCurrentAns + 1, quizCurrentAns - 1, quizCurrentAns + 2].filter(n => n > 0);
+            opts = Array.from(new Set(opts)).sort(() => Math.random() - 0.5);
+
+            opts.forEach(opt => {
+                container.innerHTML += `
+                    <button onclick="checkQuizAnswer(${opt})" class="btn-bounce bg-indigo-50 border-2 border-indigo-200 font-bold text-2xl py-3 rounded-xl hover:bg-indigo-100 text-indigo-900 shadow">
+                        ${opt}
+                    </button>
+                `;
+            });
+        }
+
+        function checkQuizAnswer(chosen) {
+            if (chosen === quizCurrentAns) {
+                playSound('correct');
+                quizScore += 10;
+                document.getElementById('quiz-score').innerText = quizScore;
+                confetti({ particleCount: 30, spread: 40 });
+            } else {
+                playSound('wrong');
+                quizLives--;
+                document.getElementById('quiz-lives').innerText = quizLives;
+            }
+
+            if (quizLives <= 0) {
+                endQuizGame("❤️ Nyawa Kamu Habis!");
+            } else {
+                nextQuizQuestion();
+            }
+        }
+
+        function endQuizGame(reason) {
+            clearInterval(quizInterval);
+            confetti({ particleCount: 90, spread: 70 });
+            
+            document.getElementById('quiz-gameplay').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.remove('hidden');
+            document.getElementById('quiz-end-reason').innerText = reason;
+            document.getElementById('quiz-final-score').innerText = quizScore;
+        }
+
+        // --- LATIHAN SOAL LOGIC & FIXED HINT MODAL ---
+        let currentPractice = { a: 0, b: 0, ans: 0 };
+        function loadPracticeProblem() {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            currentPractice = { a, b, ans: a + b };
+            const qEl = document.getElementById('practice-question');
+            if (qEl) qEl.innerText = `${a} + ${b} = ?`;
+            
+            const visualBox = document.getElementById('practice-visuals');
+            if (visualBox) {
+                visualBox.innerHTML = '';
+                // Objek seragam: Pisang (🍌) + Pisang (🍌)
+                for(let i=0; i<a; i++) visualBox.innerHTML += `<span class="text-2xl">🍌</span>`;
+                visualBox.innerHTML += `<span class="text-2xl font-bold mx-2 text-amber-600">+</span>`;
+                for(let i=0; i<b; i++) visualBox.innerHTML += `<span class="text-2xl">🍌</span>`;
+            }
+
+            const optionsBox = document.getElementById('practice-options');
+            if (optionsBox) {
+                optionsBox.innerHTML = '';
+                const correctAns = a + b;
+                let options = [correctAns, correctAns + 1, correctAns - 1, correctAns + 2].filter(n => n > 0);
+                options = Array.from(new Set(options)).sort(() => Math.random() - 0.5);
+
+                options.forEach(opt => {
+                    optionsBox.innerHTML += `
+                        <button onclick="checkPracticeAnswer(${opt})" class="btn-bounce bg-white border-2 border-amber-300 font-bold text-2xl py-3 rounded-xl hover:bg-amber-100 text-amber-900 shadow">
+                            ${opt}
+                        </button>
+                    `;
+                });
+            }
+
+            const fb = document.getElementById('practice-feedback');
+            if (fb) {
+                fb.classList.add('hidden');
+                fb.innerText = '';
+            }
+        }
+
+        function checkPracticeAnswer(chosen) {
+            const fb = document.getElementById('practice-feedback');
+            if (chosen === currentPractice.ans) {
+                playSound('correct');
+                confetti({ particleCount: 40, spread: 50 });
+                if (fb) {
+                    fb.innerText = "🎉 Benar! Bagus Sekali!";
+                    fb.className = "font-bold text-lg text-emerald-600";
+                    fb.classList.remove('hidden');
+                }
+            } else {
+                playSound('wrong');
+                if (fb) {
+                    fb.innerText = "❌ Kurang Tepat, Coba Lagi!";
+                    fb.className = "font-bold text-lg text-red-500";
+                    fb.classList.remove('hidden');
+                }
+            }
+        }
+
+        function togglePracticeHintModal(show) {
+            const modal = document.getElementById('modal-practice-hint');
+            if (modal) {
+                if (show) modal.classList.remove('hidden');
+                else modal.classList.add('hidden');
+            }
+        }
+
+        function showPracticeHint() {
+            playSound('click');
+            const hintBody = document.getElementById('hint-modal-body');
+            if (hintBody) {
+                hintBody.innerHTML = `
+                    <p class="mb-2">Hitung total seluruh pisang di atas:</p>
+                    <p class="font-bold text-lg text-amber-900 mb-1">${currentPractice.a} Pisang 🍌 + ${currentPractice.b} Pisang 🍌</p>
+                    <p class="text-xs text-gray-600">Simpan <b>${Math.max(currentPractice.a, currentPractice.b)}</b> di pikiranmu, lalu hitung maju <b>${Math.min(currentPractice.a, currentPractice.b)}</b> langkah!</p>
+                `;
+            }
+            togglePracticeHintModal(true);
+        }
+
+        // Initialize Splash Screen on load
+        function playBgVideo() {
+            const bgVid = document.getElementById('bg-video');
+            if (bgVid) {
+                bgVid.muted = true;
+                const playPromise = bgVid.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {});
+                }
+            }
+        }
+
+        document.addEventListener('touchstart', playBgVideo, { once: true });
+        document.addEventListener('click', playBgVideo, { once: true });
+
+        window.onload = function() {
+            switchScreen('screen-splash');
+            playBgVideo();
+        };
+    </script>
+</body>
+</html>
